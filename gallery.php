@@ -49,7 +49,7 @@ $availableSets  = [];
 $setThumbnails  = [];
 
 foreach ($folderMap as $setName => $folder) {
-    $dirPath = __DIR__ . '/' . $folder;
+    $dirPath = __DIR__ . '/plates/' . $folder;
     $availableSets[$setName] = false;
     $setThumbnails[$setName] = null;
 
@@ -58,7 +58,7 @@ foreach ($folderMap as $setName => $folder) {
         foreach ($files as $file) {
             if (preg_match('/a\.(jpg|jpeg|png|gif|webp|bmp)$/i', $file)) {
                 $availableSets[$setName] = true;
-                $setThumbnails[$setName] = $folder . '/' . $file; // web path
+                $setThumbnails[$setName] = 'plates/' . $folder . '/' . $file; // web path
                 break;
             }
         }
@@ -71,8 +71,11 @@ $folder = null;
 
 if ($selectedSet && isset($folderMap[$selectedSet])) {
     $folder = $folderMap[$selectedSet];
-    $dirPath = __DIR__ . '/' . $folder;
-    $webPath = $folder;
+    $dirPath = __DIR__ . '/plates/' . $folder;
+    $webPath = '/plates/' . $folder;
+
+    echo "<!-- DEBUG dirPath=$dirPath -->";
+
 
     if (is_dir($dirPath)) {
         $files = scandir($dirPath);
@@ -85,7 +88,7 @@ if ($selectedSet && isset($folderMap[$selectedSet])) {
             $basename = pathinfo($file, PATHINFO_FILENAME);
 
             // Only filenames ending with 'a'
-            if (preg_match('/a$/i', $basename) && in_array($ext, $allowedExtensions)) {
+            if (preg_match('/_a$/i', $basename) && in_array($ext, $allowedExtensions)) {
                 $baseNoLetter = substr($basename, 0, -1);
                 $aFile = $webPath . '/' . $file;
                 $bFile = $webPath . '/' . $baseNoLetter . 'b.' . $ext;
@@ -129,15 +132,17 @@ if ($selectedSet && isset($folderMap[$selectedSet])) {
 
 <?php else: ?>
 
-  <?php
-  // Show your per-set info.php if it exists
-  if ($folder && file_exists(__DIR__ . '/' . $folder . '/info.php')) {
-      include __DIR__ . '/' . $folder . '/info.php';
-  } else {
-      // fallback (no layout changes)
-      echo '<div class="set-width"><a class="home-box" href="gallery.php">Gallery Home</a></div>';
-  }
-  ?>
+<?php
+// Centralized per-set info include: /setinfo/<code>_info.php
+$infoPath = __DIR__ . '/setinfo/' . $folder . '_info.php';
+
+if ($folder && file_exists($infoPath)) {
+    include $infoPath;
+} else {
+    echo '<div class="set-width"><a class="home-box" href="gallery.php">Gallery Home</a></div>';
+}
+?>
+
 
   <?php if (!empty($images)): ?>
     <div class="image-container set-width">
@@ -159,11 +164,14 @@ if ($selectedSet && isset($folderMap[$selectedSet])) {
     </div>
 
     <?php
-    // Show per-set varieties.php if it exists
-    if ($folder && file_exists(__DIR__ . '/' . $folder . '/varieties.php')) {
-        include __DIR__ . '/' . $folder . '/varieties.php';
+    // Centralized per-set varieties include: /setinfo/<code>_varieties.php
+    $varPath = __DIR__ . '/setinfo/' . $folder . '_varieties.php';
+
+    if ($folder && file_exists($varPath)) {
+        include $varPath;
     }
     ?>
+
   <?php else: ?>
     <p>No images found for <?php echo htmlspecialchars($selectedSet, ENT_QUOTES, 'UTF-8'); ?>.</p>
   <?php endif; ?>
