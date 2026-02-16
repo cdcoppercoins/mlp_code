@@ -1,15 +1,19 @@
 <?php
 // about.php
+?><!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>About MiniLicensePlates.com</title>
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
 
-// TEMP debugging (remove later if you want)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+<?php include __DIR__ . '/header.php'; ?>
 
-include __DIR__ . '/header.php';
-?>
-
-<div style="max-width: 1000px; margin: 0 auto; padding: 16px;">
+<div class="page-box">
+    <!-- your About content exactly as you have it -->
     <h1>About MiniLicensePlates.com</h1>
 
     <p>
@@ -60,3 +64,6 @@ include __DIR__ . '/header.php';
 </div>
 
 <?php include __DIR__ . '/footer.php'; ?>
+
+</body>
+</html>
