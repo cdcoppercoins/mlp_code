@@ -363,22 +363,3 @@ body {
         width: 95%;
     }
 }
-
-/* --- Page content box (used for About/History/Contribute pages) --- */
-.page-box {
-    max-width: 1000px;
-    margin: 24px auto;
-    padding: 24px;
-    background: #fff;
-    color: #111;
-    border-radius: 8px;
-}
-
-.page-box h1,
-.page-box h2 {
-    color: #111;
-}
-
-.page-box a {
-    color: #0b57d0;
-}
