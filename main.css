@@ -2,6 +2,12 @@
    Global / Page background
 -------------------------------------------------- */
 
+html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+}
+
+
 body {
     background: url('background_img.jpg') repeat;
     margin: 0;
