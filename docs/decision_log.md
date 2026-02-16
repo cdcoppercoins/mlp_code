@@ -5,3 +5,4 @@
 - 2026-02-16: Added `html { overflow-y: scroll; }` to prevent header width/size shift between short and long pages.
 - 2026-02-16: Switched site font to Nunito via Google Fonts import.
 - 2026-02-16: Plan/structure updated to store all set folders and images under `/plates/` instead of site root.
+- 2026-02-16: Executed the plan to centralize info.php and varieties.php files into a /setinfo/ folder.
