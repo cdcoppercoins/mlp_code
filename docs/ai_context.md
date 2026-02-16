@@ -16,3 +16,18 @@ High-risk areas:
 - CSS class renames
 - moving wrapper divs (`content-wrapper`, `set-width`)
 - changing gallery file naming expectations (a/b)
+
+
+Set images live in: /plates/<set_code>/
+
+Gallery reads images from /plates/ and expects *_a.* / *_b.*
+
+Set info/varieties are centralized in /setinfo/:
+
+<set>_info.php, optional <set>_img.jpg
+
+<set>_varieties.php
+
+gallery.php includes /setinfo/<set>_info.php and /setinfo/<set>_varieties.php
+
+We removed any empty <img src=""> lines that broke layout
