@@ -135,7 +135,7 @@ if ($selectedSet && isset($folderMap[$selectedSet])) {
       include __DIR__ . '/' . $folder . '/info.php';
   } else {
       // fallback (no layout changes)
-      echo '<div class="set-width"><a class="home-box" href="gallery.php">Home</a></div>';
+      echo '<div class="set-width"><a class="home-box" href="gallery.php">Gallery Home</a></div>';
   }
   ?>
 

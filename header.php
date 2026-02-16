@@ -11,11 +11,11 @@
   <div class="nav-outer">
     <nav class="main-nav">
       <ul>
-        <li><a href="/">HOME</a></li>
+        <li><a href="index.php">HOME</a></li>
         <li><a href="/gallery.php">GALLERY</a></li>
         <li><a href="/about.php">ABOUT</a></li>
         <li><a href="/history.php">HISTORY</a></li>
-        <li><a href="/contribute.php">CONTRIBIUTE</a></li>        
+        <li><a href="/contribute.php">CONTRIBIUTE</a></li>
         <li><a href="https://www.ebay.com/str/minilicenseplates" target="new">SHOP</a></li>
       </ul>
     </nav>
