@@ -1,4 +1,6 @@
 <?php
+// index.php
+
 // "set name" => folder name
 $folderMap = [
     '1936 Goudey Cards'     => 'c36g',
@@ -53,23 +55,24 @@ foreach ($folderMap as $setName => $folder) {
     if (is_dir($dirPath)) {
         $files = scandir($dirPath);
         foreach ($files as $file) {
-            // look for first "a" image (e.g., 001a.jpg)
             if (preg_match('/a\.(jpg|jpeg|png|gif|webp|bmp)$/i', $file)) {
                 $availableSets[$setName] = true;
-                $setThumbnails[$setName] = $folder . '/' . $file; // web path
+                $setThumbnails[$setName] = 'plates/' . $folder . '/' . $file; // FIXED PATH
                 break;
             }
         }
     }
 }
 
-$selectedSet = isset($_GET['year']) ? $_GET['year'] : null; // 'year' now holds the set label
+$selectedSet = isset($_GET['year']) ? $_GET['year'] : null;
 $images = [];
 
 if ($selectedSet && isset($folderMap[$selectedSet])) {
     $folder = $folderMap[$selectedSet];
-    $dirPath = __DIR__ . '/' . $folder;
-    $webPath = $folder;
+
+    // NOTE: your images live in /plates/<folder>/..., so dirPath must match that
+    $dirPath = __DIR__ . '/plates/' . $folder;
+    $webPath = 'plates/' . $folder;
 
     if (is_dir($dirPath)) {
         $files = scandir($dirPath);
@@ -81,7 +84,6 @@ if ($selectedSet && isset($folderMap[$selectedSet])) {
             $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
             $basename = pathinfo($file, PATHINFO_FILENAME);
 
-            // Only filenames ending with 'a'
             if (preg_match('/a$/i', $basename) && in_array($ext, $allowedExtensions)) {
                 $baseNoLetter = substr($basename, 0, -1);
                 $aFile = $webPath . '/' . $file;
@@ -96,130 +98,76 @@ if ($selectedSet && isset($folderMap[$selectedSet])) {
         }
     }
 }
+
+$pageTitle = 'Cereal and other premium prize miniature license plates';
+include __DIR__ . '/site_top.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Cereal and other premium prize miniature license plates</title>
-    <link rel="stylesheet" href="main.css" />
-</head>
-<body>
-        <?php include 'header.php'; ?>
 
-        <div class="content-wrapper">
-    <!-- Everything currently inside goes here -->
+<?php if (!$selectedSet): ?>
+  <div class="set-list set-width">
+    <?php foreach ($folderMap as $setName => $folder): ?>
+      <?php $enabled = !empty($availableSets[$setName]); ?>
+      <a
+        class="set-box<?php echo $enabled ? '' : ' disabled'; ?>"
+        <?php if ($enabled): ?>
+          href="?year=<?php echo urlencode($setName); ?>"
+        <?php else: ?>
+          href="javascript:void(0)"
+        <?php endif; ?>
+      >
+        <?php if ($enabled && !empty($setThumbnails[$setName])): ?>
+          <img
+            src="<?php echo htmlspecialchars($setThumbnails[$setName], ENT_QUOTES, 'UTF-8'); ?>"
+            alt="<?php echo htmlspecialchars($setName, ENT_QUOTES, 'UTF-8'); ?> thumbnail"
+            class="set-thumb">
+        <?php else: ?>
+          <div class="set-thumb placeholder"></div>
+        <?php endif; ?>
+        <span class="set-label"><?php echo htmlspecialchars($setName, ENT_QUOTES, 'UTF-8'); ?></span>
+      </a>
+    <?php endforeach; ?>
+  </div>
+<?php else: ?>
+  <div class="set-width">
+    The Full Library of mini license plate images. We are still working on this section, but keep coming back to see
+    more sets listed as we obtain samples for images. If you have any sets that you do not see here, please feel free to contact me and we will arrange
+    having them listed here. Enjoy!
+    <br>Click on any image to see the front of the plate in full screen size.<br><br>
+    <a class="home-box" href="<?php echo htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8'); ?>">Home</a>
+  </div>
+<?php endif; ?>
 
-    <?php if (!$selectedSet): ?>
-        <!-- Home view: show all sets -->
-        <div class="set-list set-width">
-            <?php foreach ($folderMap as $setName => $folder): ?>
-                <?php $enabled = !empty($availableSets[$setName]); ?>
-                <a
-                    class="set-box<?php echo $enabled ? '' : ' disabled'; ?>"
-                    <?php if ($enabled): ?>
-                        href="?year=<?php echo urlencode($setName); ?>"
-                    <?php else: ?>
-                        href="javascript:void(0)"
-                    <?php endif; ?>
-                >
-                    <?php if ($enabled && !empty($setThumbnails[$setName])): ?>
-                        <img
-                            src="<?php echo htmlspecialchars($setThumbnails[$setName], ENT_QUOTES, 'UTF-8'); ?>"
-                            alt="<?php echo htmlspecialchars($setName, ENT_QUOTES, 'UTF-8'); ?> thumbnail"
-                            class="set-thumb">
-                    <?php else: ?>
-                        <div class="set-thumb placeholder"></div>
-                    <?php endif; ?>
-                    <span class="set-label">
-                        <?php echo htmlspecialchars($setName, ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </a>
-            <?php endforeach; ?>
-        </div>
-    <?php else: ?>
-        <!-- Instruction text + Home button when inside a set -->
-        <div class="set-width">
-                    The Full Library of mini license plate images. We are still working on this section, but keep coming back to see
-        more sets listed as we obtain samples for images. If you have any sets that you do not see here, please feel free to contact me and we will arrange
-        having them listed here. Enjoy!
-            <br>Click on any image to see the front of the plate in full screen size.<br><br>
-            <a class="home-box" href="<?php echo htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8'); ?>">
-                Home
-            </a>
-        </div>
-    <?php endif; ?>
+<?php if ($selectedSet && !empty($images)): ?>
+  <div class="image-container set-width">
+    <?php foreach ($images as $pair): ?>
+      <?php if ($pair['b']): ?>
+        <img class="thumb-img"
+             src="<?php echo htmlspecialchars($pair['a'], ENT_QUOTES, 'UTF-8'); ?>"
+             data-hover="<?php echo htmlspecialchars($pair['b'], ENT_QUOTES, 'UTF-8'); ?>"
+             data-original="<?php echo htmlspecialchars($pair['a'], ENT_QUOTES, 'UTF-8'); ?>"
+             onmouseover="this.src=this.dataset.hover"
+             onmouseout="this.src=this.dataset.original" alt="">
+      <?php else: ?>
+        <img class="thumb-img"
+             src="<?php echo htmlspecialchars($pair['a'], ENT_QUOTES, 'UTF-8'); ?>"
+             data-original="<?php echo htmlspecialchars($pair['a'], ENT_QUOTES, 'UTF-8'); ?>" alt="">
+      <?php endif; ?>
+    <?php endforeach; ?>
+  </div>
+<?php elseif ($selectedSet && empty($images)): ?>
+  <p>No images found for <?php echo htmlspecialchars($selectedSet, ENT_QUOTES, 'UTF-8'); ?>.</p>
+<?php endif; ?>
 
-    <?php if ($selectedSet && !empty($images)): ?>
-        <div class="image-container set-width">
-            <?php foreach ($images as $pair): ?>
-                <?php if ($pair['b']): ?>
-                    <img class="thumb-img"
-                         src="<?php echo htmlspecialchars($pair['a'], ENT_QUOTES, 'UTF-8'); ?>"
-                         data-hover="<?php echo htmlspecialchars($pair['b'], ENT_QUOTES, 'UTF-8'); ?>"
-                         data-original="<?php echo htmlspecialchars($pair['a'], ENT_QUOTES, 'UTF-8'); ?>"
-                         onmouseover="this.src=this.dataset.hover"
-                         onmouseout="this.src=this.dataset.original">
-                <?php else: ?>
-                    <img class="thumb-img"
-                         src="<?php echo htmlspecialchars($pair['a'], ENT_QUOTES, 'UTF-8'); ?>"
-                         data-original="<?php echo htmlspecialchars($pair['a'], ENT_QUOTES, 'UTF-8'); ?>"
-                         alt="">
-                <?php endif; ?>
-            <?php endforeach; ?>
-        </div>
-    <?php elseif ($selectedSet && empty($images)): ?>
-        <p>No images found for <?php echo htmlspecialchars($selectedSet, ENT_QUOTES, 'UTF-8'); ?>.</p>
-    <?php endif; ?>
+<div id="imageModal" class="modal">
+  <span class="modal-close">&times;</span>
+  <img id="modalImg" src="" alt="">
+</div>
 
-    <!-- Modal -->
-    <div id="imageModal" class="modal">
-        <span class="modal-close">&times;</span>
-        <img id="modalImg" src="" alt="">
-    </div>
+<script>
+(function () {
+  const modal = document.getElementById('imageModal');
+  const modalImg = document.getElementById('modalImg');
+  const closeBtn = document.querySelector('.modal-close');
+  if (!modal || !modalImg || !closeBtn) return;
 
-
-        </div>
-
-        <?php include 'footer.php'; ?>
-
-</body>
-
-    <script>
-        (function () {
-            const modal = document.getElementById('imageModal');
-            const modalImg = document.getElementById('modalImg');
-            const closeBtn = document.querySelector('.modal-close');
-
-            if (!modal || !modalImg || !closeBtn) return;
-
-            // Open modal – always show "a" side
-            document.querySelectorAll('.thumb-img').forEach(function (img) {
-                img.addEventListener('click', function () {
-                    modal.style.display = 'flex';
-                    let src = this.dataset.original || this.src;
-                    src = src.replace(/([ab])(\.[^.]+)$/i, 'a$2');
-                    modalImg.src = src;
-                });
-            });
-
-            const closeModal = function () {
-                modal.style.display = 'none';
-                modalImg.src = '';
-            };
-
-            closeBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', function (e) {
-                if (e.target === modal) closeModal();
-            });
-            modalImg.addEventListener('click', closeModal);
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && modal.style.display === 'flex') {
-                    closeModal();
-                }
-            });
-        })();
-    </script>
-
-</body>
-</html>
+  document.query
