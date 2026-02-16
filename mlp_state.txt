@@ -1,0 +1,27 @@
+MiniLicensePlates project state (Feb 2026)
+
+- Site uses one shared layout:
+  inc/page_top.php + inc/page_bottom.php + main.css
+
+- Gallery page: gallery.php
+
+- Plate image folders are in:
+  /plates/<set_code>/
+  Example: /plates/m88p/
+
+- Image filenames use:
+  *_a.<ext> (front) and *_b.<ext> (back)
+
+- Set info and varieties are centralized in:
+  /setinfo/
+
+  Info file naming:
+    /setinfo/<set_code>_info.php
+  Optional info image:
+    /setinfo/<set_code>_img.jpg
+  Varieties file naming:
+    /setinfo/<set_code>_varieties.php
+
+- Fixed layout issue by removing any empty tags like:
+  <img src="">
+  from setinfo files
