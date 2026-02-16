@@ -1,6 +1,6 @@
-/* -----------------------------
+/* --------------------------------------------------
    Global / Page background
------------------------------ */
+-------------------------------------------------- */
 
 body {
     background: url('background_img.jpg') repeat;
@@ -9,110 +9,80 @@ body {
     font-family: Arial, sans-serif;
 }
 
-.page-shell {
-    width: 75%;          /* single source of truth for site width */
-    margin: 0 auto;      /* perfectly centered */
-    background: #ffffff; /* white behind header/nav/content */
+/* Main white content area */
+
+.content-wrapper {
+    width: 75%;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 0 0px;
+    padding-top: 25px;
+    padding-bottom: 30px;
     box-sizing: border-box;
 }
 
-/* Main white content area */
-.content-wrapper {
-    width: 75%;              /* matches header/nav/set width */
-    margin: 0 auto;          /* center horizontally */
-    background: #ffffff;
-    padding: 10px 15px 0 15px; /* small top padding + 15px sides */
-    box-sizing: border-box;
-}
-/* Inner width helpers (used in header/footer/etc.) */
+/* Helper width containers */
+
 .inner-width,
 .set-width {
     width: 75%;
     margin: 0 auto;
+    padding: 5px;
     box-sizing: border-box;
 }
 
-/* Remove stray backgrounds inside white area if needed */
-.set-list,
-.image-container {
-    width: 100%;
-}
+/* --------------------------------------------------
+   HEADER + RESPONSIVE BANNER
+-------------------------------------------------- */
 
-/* -----------------------------
-   Header & Banners
------------------------------ */
-
-/* Orange bar behind header area */
 .site-header {
-    color: #fff;
     margin: 0;
+    padding: 0;
 }
 
-/* Wood banner frame */
 .header-frame {
     width: 75%;
-    margin: 10px auto 0;
-    background: url('banner_wood.jpg') center/cover no-repeat;
-    box-sizing: border-box;
-    border-radius: 4px;
-    box-shadow: 0 2px 0 rgba(0,0,0,0.12);
-    position: relative;
-    z-index: 1;
-}
-
-/* Inner wrapper (no background) */
-.header-inner {
+    margin: 0 auto;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Single responsive banner image */
+/* The single banner image */
 .site-banner {
-    display: block;
     width: 100%;
     height: auto;
-    margin: 15px 15px 0 15px;       /* 15px top/left/right gap */
-    box-shadow: 0 0 0 15px #ffffff; /* white “border” inside wood */
+    display: block;
+    border-radius: 4px;
 }
 
-/* -----------------------------
-   Main navigation
------------------------------ */
+/* --------------------------------------------------
+   NAVIGATION BAR
+-------------------------------------------------- */
 
-/* White strip under header that matches content width */
-.nav-outer {
-    width: 75%;          /* same as header/content */
-    margin: 8px auto 0;  /* 8px below banner */
-    background: #ffffff;
-    box-sizing: border-box;
-}
-
-/* Nav itself: 60% width, centered inside white strip */
 .main-nav {
-    width: 60%;
-    margin: 0 auto;
+    width: 75%;        /* requested: 60% of content width */
+    margin: 0px auto;  /* centered + pushed down slightly */
     position: relative;
-    z-index: 2;
+    z-index: 10;
 }
 
-/* Gold nav bar */
 .main-nav ul {
     list-style: none;
     margin: 0;
     padding: 0;
-    background: #9c7420;        /* gold/brown bar */
-    border: 3px solid #ffffff;  /* white outline */
+    background: #9c7420;
+    border: 5px solid #fff;
     border-radius: 3px;
     display: flex;
     justify-content: center;
-    gap: 28px;
 }
 
 .main-nav a {
     display: block;
-    padding: 12px 18px;
+    padding: 5px 18px;
     color: #fff;
     font-weight: 800;
+    font-size: 1.5vw;
     letter-spacing: 0.5px;
     text-decoration: none;
     text-shadow: 0 2px 0 rgba(0,0,0,0.35);
@@ -122,48 +92,22 @@ body {
     background: #b9852a;
 }
 
-/* -----------------------------
-   Optional legacy logo/title
-   (kept in case used elsewhere)
------------------------------ */
-
-.site-logo {
-    max-height: 160px;
-    height: auto;
-    width: auto;
-    flex-shrink: 0;
-}
-
-.site-title-group {
-    text-align: left;
-}
-
-.site-title-group h1 {
-    margin: 0 0 5px;
-    font-size: 22px;
-}
-
-.site-title-group p {
-    margin: 0;
-    font-size: 14px;
-}
-
-/* -----------------------------
-   Set list & set buttons
------------------------------ */
+/* --------------------------------------------------
+   SET LIST + SET BUTTONS
+-------------------------------------------------- */
 
 .set-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 15px;
-    padding: 25px 5px;
+    padding: 15px 5px;
     margin: 20px auto;
     background: #446;
 }
 
 .set-box {
-    width: 300px;
+    width: 30%;
     padding: 20px;
     background: #aac;
     color: #ff0;
@@ -171,16 +115,14 @@ body {
     border: 2px solid #009;
     border-radius: 10px;
     display: flex;
-    flex-direction: column; /* thumbnail above text */
+    flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     text-decoration: none;
     font-size: 18px;
     font-weight: bold;
     box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    transition: transform 0.15s ease,
-                box-shadow 0.15s ease,
-                background 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .set-box:hover {
@@ -189,33 +131,22 @@ body {
     box-shadow: 0 6px 16px rgba(0,0,0,0.5);
 }
 
-/* Thumbnail inside set button */
 .set-thumb {
     width: 100%;
-    max-height: 120px;
+    height: 120px;
     min-height: 120px;
     margin-bottom: 10px;
-    display: block;
     object-fit: contain;
 }
 
-/* Change thumb background only when its box is hovered */
 .set-box:hover .set-thumb {
     background: #d90;
 }
 
-/* Black placeholder for disabled/no-image sets */
 .set-thumb.placeholder {
-    height: 120px;
     background: #000;
 }
 
-.set-label {
-    display: block;
-    text-align: center;
-}
-
-/* Disabled set buttons */
 .set-box.disabled {
     opacity: 0.4;
     background: #777;
@@ -227,13 +158,13 @@ body {
 }
 
 /* Home button */
+
 .home-box {
     display: inline-flex;
     width: 300px;
     padding: 20px;
     background: #aac;
     color: #ff0;
-    box-sizing: border-box;
     border: 2px solid #009;
     border-radius: 6px;
     align-items: center;
@@ -243,9 +174,7 @@ body {
     font-weight: bold;
     box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     margin: 10px auto 20px;
-    transition: transform 0.15s ease,
-                box-shadow 0.15s ease,
-                background 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
 
 .home-box:hover {
@@ -254,28 +183,32 @@ body {
     box-shadow: 0 6px 16px rgba(0,0,0,0.5);
 }
 
-/* -----------------------------
-   Image grid & modal
------------------------------ */
+/* --------------------------------------------------
+   IMAGE GRID
+-------------------------------------------------- */
 
 .image-container {
     margin: 10px auto;
     background: #446;
-    box-sizing: border-box;
     text-align: center;
+    box-sizing: border-box;
+    border-radius: 20px; /* rounded corners */
 }
 
 .image-container img {
-    max-width: 210px;
+    max-width: 250px;
     width: 100%;
     height: auto;
-    display: inline-block;
     margin: 10px;
+    display: inline-block;
     transition: 0.2s ease-in-out;
     cursor: pointer;
 }
 
-/* Modal overlay */
+/* --------------------------------------------------
+   MODAL
+-------------------------------------------------- */
+
 .modal {
     display: none;
     position: fixed;
@@ -284,7 +217,7 @@ body {
     top: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(200,200,200,0.8);
+    background: rgba(200,200,200,0.85);
     justify-content: center;
     align-items: center;
 }
@@ -292,6 +225,8 @@ body {
 .modal img {
     max-width: 95vw;
     max-height: 95vh;
+    box-shadow: 0 0 25px rgba(0,0,0,0.9);
+    background: #000;
 }
 
 .modal-close {
@@ -304,29 +239,31 @@ body {
     user-select: none;
 }
 
-/* -----------------------------
-   Footer
------------------------------ */
+/* --------------------------------------------------
+   FOOTER
+-------------------------------------------------- */
 
 .site-footer {
-    background: #d90;
+    background: #9c7420;
     color: #ffffff;
-    padding: 15px 0;
-    margin-top: 40px;
+    padding: 20px 0;
+    margin: 0px 0px 0px 0px;
 }
 
 .footer-inner {
     font-size: 14px;
+    text-align: center;
 }
 
-/* -----------------------------
-   Responsive tweaks
------------------------------ */
+/* --------------------------------------------------
+   RESPONSIVE TWEAKS
+-------------------------------------------------- */
 
-/* Header/nav tightening on tablets/phones */
 @media (max-width: 640px) {
     .header-frame,
-    .main-nav {
+    .main-nav,
+    .inner-width,
+    .set-width {
         width: 95%;
     }
 
@@ -341,7 +278,6 @@ body {
     }
 }
 
-/* Stack set boxes on small phones */
 @media (max-width: 400px) {
     .set-list {
         flex-direction: column;
@@ -357,9 +293,57 @@ body {
     .image-container {
         width: 95%;
     }
+}
 
-    .inner-width,
-    .set-width {
-        width: 95%;
-    }
+/* Paragraph information box */
+.info-box {
+    background: #ffffff;
+    border: 4px solid #446;
+    padding: 20px;
+    padding-top: 60px; /* space for label */
+    margin: 25px auto;
+    margin-top: 15px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px; /* space between text and image */
+    border-radius: 20px; /* rounded corners */
+}
+
+/* Full-width label bar */
+.info-box-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;            /* full width across the box */
+    background: #446;    /* heavy white bar */
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.5vw;
+    padding: 12px 20px;
+    border-bottom: 4px solid #446;
+
+    /* match top rounded corners of the parent */
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-sizing: border-box;
+}
+
+/* Text area */
+.info-box p {
+    flex: 1;
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+/* Right-side image */
+.info-img {
+    flex: 0 0 auto;
+    width: min(40%, 520px);   /* never exceed 1/3 of box or ~260px */
+    min-width: 100px;         /* never shrink below 120px */
+    aspect-ratio: 3 / 4;      /* required proportion */
+    object-fit: contain;
+    padding: 20px;
 }

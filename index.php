@@ -23,22 +23,22 @@ $folderMap = [
     '1966 Canada GM Stickers'   => 's66g',
     '1968 Maple Leaf'       => 'm68m',
     '1968 Quaker Cereal'    => 'm68q',
-    '1968 Post'             => 'm68p',
-    '1970 Post'             => 'm70p',
-    '1975 Post'             => 'm75p',
-    '1978 Post'             => 'm78p',
+    '1968 Post Cereal Plates'             => 'm68p',
+    '1970 Post Cereal Plates'             => 'm70p',
+    '1975 Post Cereal Plates'             => 'm75p',
+    '1978 Post Cereal Plates'             => 'm78p',
     '1978 Super Sips candy' => 's78s',
-    '1979 Post'             => 'm79p',
-    '1980 Post'             => 'm80p',
-    '1981 Post'             => 'm81p',
-    '1982 Post'             => 'm82p',
-    '1983 Post'             => 'm83p',
-    '1984 Post'             => 'm84p',
-    '1986 Post'             => 'm86p',
-    '1987 Post'             => 'm87p',
-    '1988 Post'             => 'm88p',
-    '1989 Post'             => 'm89p',
-    '1990 Post'             => 'm90p',
+    '1979 Post Cereal Plates'             => 'm79p',
+    '1980 Post Cereal Plates'             => 'm80p',
+    '1981 Post Cereal Plates'             => 'm81p',
+    '1982 Post Cereal Plates'             => 'm82p',
+    '1983 Post Cereal Plates'             => 'm83p',
+    '1984 Post Cereal Plates'             => 'm84p',
+    '1986 Post Cereal Plates'             => 'm86p',
+    '1987 Post Cereal Plates'             => 'm87p',
+    '1988 Post Cereal Plates'             => 'm88p',
+    '1989 Post Cereal Plates'             => 'm89p',
+    '1990 Post Cereal Plates'             => 'm90p',
 ];
 
 // Compute availability + thumbnail (first "*a.xxx" image) per set
@@ -46,7 +46,7 @@ $availableSets  = [];
 $setThumbnails  = [];
 
 foreach ($folderMap as $setName => $folder) {
-    $dirPath = __DIR__ . '/plates/' . $folder;
+    $dirPath = __DIR__ . '/' . $folder;
     $availableSets[$setName] = false;
     $setThumbnails[$setName] = null;
 
@@ -139,15 +139,8 @@ if ($selectedSet && isset($folderMap[$selectedSet])) {
         </div>
     <?php else: ?>
         <!-- Instruction text + Home button when inside a set -->
-        <div class="set-width">
-                    The Full Library of mini license plate images. We are still working on this section, but keep coming back to see
-        more sets listed as we obtain samples for images. If you have any sets that you do not see here, please feel free to contact me and we will arrange
-        having them listed here. Enjoy!
-            <br>Click on any image to see the front of the plate in full screen size.<br><br>
-            <a class="home-box" href="<?php echo htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8'); ?>">
-                Home
-            </a>
-        </div>
+    <?php include($folder."/info.php");?>
+
     <?php endif; ?>
 
     <?php if ($selectedSet && !empty($images)): ?>
@@ -168,6 +161,8 @@ if ($selectedSet && isset($folderMap[$selectedSet])) {
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
+    <?php include($folder."/varieties.php");?>   
+
     <?php elseif ($selectedSet && empty($images)): ?>
         <p>No images found for <?php echo htmlspecialchars($selectedSet, ENT_QUOTES, 'UTF-8'); ?>.</p>
     <?php endif; ?>
@@ -177,6 +172,7 @@ if ($selectedSet && isset($folderMap[$selectedSet])) {
         <span class="modal-close">&times;</span>
         <img id="modalImg" src="" alt="">
     </div>
+
 
         </div>
 
