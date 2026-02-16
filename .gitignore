@@ -1,17 +1,46 @@
-# Don't upload secrets
-.env
-.env.*
-config.php
-config.local.php
-db.php
-
-# Don't upload big images (common folders - adjust later)
-images/
-img/
-uploads/
-c*/
-
-# junk
-*.log
+# ---------------------------
+# OS / Editor junk
+# ---------------------------
 .DS_Store
 Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# ---------------------------
+# Server / misc junk
+# ---------------------------
+error_log
+**/error_log
+*.log
+
+# Photoshop / design sources (usually huge)
+*.psd
+*.psb
+
+# ---------------------------
+# Plates images: IGNORE images, KEEP PHP metadata
+# Your sets live in: D:\mlp_code\plates\<set>\...
+# ---------------------------
+plates/**/*
+
+# Re-include folders so Git can see keep-files below
+!plates/**/
+!plates/**/info.php
+!plates/**/varieties.php
+!plates/**/.htaccess
+
+# If you store any non-image data files you want tracked, add them here:
+# !plates/**/readme.md
+
+# ---------------------------
+# Web images outside plates (these are your site UI images)
+# Keep these because they are part of the site design:
+# background_img.jpg, header_banner.png, etc.
+# (So we do NOT ignore *.jpg/*.png globally.)
+# ---------------------------
+
+# ---------------------------
+# Optional: ignore old/alt builds
+# ---------------------------
+mlp_v2/
