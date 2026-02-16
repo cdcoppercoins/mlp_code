@@ -1,0 +1,226 @@
+-- MySQL 8.0+ recommended
+SET sql_mode = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- 1) dies — canonical die records
+CREATE TABLE dies (
+  id            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  year          SMALLINT NOT NULL,
+  mint          CHAR(1)  NOT NULL,
+  denom         SMALLINT NOT NULL,         -- 1 = cent
+  die_type      CHAR(2)  NOT NULL,         -- DO, DR, MM, OM, RD, OD
+  proof         BOOLEAN  NOT NULL DEFAULT 0,
+  class         VARCHAR(50) NULL,
+  star_rating   TINYINT NULL,
+  notes         MEDIUMTEXT NULL,
+  created_at    DATETIME NULL,
+  updated_at    DATETIME NULL,
+  PRIMARY KEY (id),
+  KEY idx_dies_lookup (year, mint, denom, die_type, proof)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- 2) die_numbers — public die numbers (assignable slots)
+CREATE TABLE die_numbers (
+  id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  die_number      VARCHAR(20) NOT NULL,      -- e.g. 1960D-1MM-042
+
+  year            SMALLINT NOT NULL,
+  mint            CHAR(1)  NOT NULL,
+  denom           SMALLINT NOT NULL,
+  die_type        CHAR(2)  NOT NULL,
+  proof           BOOLEAN  NOT NULL DEFAULT 0,
+  index_num       SMALLINT NOT NULL,         -- 42
+
+  die_id          BIGINT UNSIGNED NULL,
+
+  status          ENUM('assigned','reserved_unassigned','available_unassigned')
+                  NOT NULL DEFAULT 'available_unassigned',
+
+  reserved_until  DATETIME NULL,
+  created_at      DATETIME NULL,
+  updated_at      DATETIME NULL,
+
+  PRIMARY KEY (id),
+
+  UNIQUE KEY uq_die_numbers_die_number (die_number),
+  UNIQUE KEY uq_die_numbers_key (year, mint, denom, die_type, proof, index_num),
+
+  KEY idx_lowest_available (year, mint, denom, die_type, proof, status, index_num),
+
+  KEY idx_die_numbers_die_id (die_id),
+
+  CONSTRAINT fk_die_numbers_die
+    FOREIGN KEY (die_id) REFERENCES dies(id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- 3) catalog_change_events — immutable change log (public + printable)
+CREATE TABLE catalog_change_events (
+  id            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  event_type    ENUM(
+                  'merge_number_into_canonical',
+                  'release_reserved_number',
+                  'assign_number_to_die',
+                  'reassign_number_to_new_die'
+                ) NOT NULL,
+
+  die_number_id BIGINT UNSIGNED NOT NULL,
+  from_die_id   BIGINT UNSIGNED NULL,
+  to_die_id     BIGINT UNSIGNED NULL,
+  admin_user_id BIGINT UNSIGNED NULL,      -- loose for now
+
+  reason        TEXT NULL,
+  effective_at  DATETIME NOT NULL,
+  created_at    DATETIME NULL,
+  updated_at    DATETIME NULL,
+
+  PRIMARY KEY (id),
+
+  KEY idx_events_time_type (effective_at, event_type),
+  KEY idx_events_die_number_time (die_number_id, effective_at),
+  KEY idx_events_from_die (from_die_id),
+  KEY idx_events_to_die (to_die_id),
+
+  CONSTRAINT fk_events_die_number
+    FOREIGN KEY (die_number_id) REFERENCES die_numbers(id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_events_from_die
+    FOREIGN KEY (from_die_id) REFERENCES dies(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_events_to_die
+    FOREIGN KEY (to_die_id) REFERENCES dies(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+
+  -- admin_user_id FK can be added later when users table exists
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- 4) die_stages — die stages (A, B, C…)
+CREATE TABLE die_stages (
+  id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  die_id       BIGINT UNSIGNED NOT NULL,
+  stage_letter CHAR(1) NOT NULL,      -- A–Z (mutable, per your rule)
+  stage_sort   SMALLINT NOT NULL,     -- 1..n (true order)
+  die_state    ENUM('VEDS','EDS','EMDS','MDS','LMDS','LDS','VLDS') NULL,
+  notes        MEDIUMTEXT NULL,
+  created_at   DATETIME NULL,
+  updated_at   DATETIME NULL,
+
+  PRIMARY KEY (id),
+
+  -- IMPORTANT: preserve uniqueness + ordering integrity
+  UNIQUE KEY uq_stage_letter (die_id, stage_letter),
+  UNIQUE KEY uq_stage_sort   (die_id, stage_sort),
+
+  KEY idx_stages_die_sort (die_id, stage_sort),
+
+  CONSTRAINT fk_stages_die
+    FOREIGN KEY (die_id) REFERENCES dies(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- 5) images — image storage metadata
+CREATE TABLE images (
+  id             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  storage_driver ENUM('local','s3','r2','b2') NOT NULL,
+  path           VARCHAR(512) NOT NULL,
+  sha1           CHAR(40) NULL,
+  width          SMALLINT NULL,
+  height         SMALLINT NULL,
+  filesize       INT NULL,
+  mime           VARCHAR(50) NULL,
+  created_at     DATETIME NULL,
+
+  PRIMARY KEY (id),
+
+  UNIQUE KEY uq_images_path (path),
+  KEY idx_images_sha1 (sha1)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- 6) die_images — image ↔ die links (+ optional stage link)
+CREATE TABLE die_images (
+  id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  die_id     BIGINT UNSIGNED NOT NULL,
+  image_id   BIGINT UNSIGNED NOT NULL,
+  stage_id   BIGINT UNSIGNED NULL,
+  kind       ENUM('thumbnail','obv','rev','marker','reference','other') NOT NULL,
+  caption    VARCHAR(255) NULL,
+  sort       SMALLINT NOT NULL DEFAULT 0,
+  created_at DATETIME NULL,
+  updated_at DATETIME NULL,
+
+  PRIMARY KEY (id),
+
+  KEY idx_die_images_die (die_id, kind, sort),
+  KEY idx_die_images_stage (stage_id, kind, sort),
+  KEY idx_die_images_image (image_id),
+
+  -- prevents accidental duplicate links
+  UNIQUE KEY uq_die_images_link (die_id, image_id, stage_id, kind),
+
+  CONSTRAINT fk_die_images_die
+    FOREIGN KEY (die_id) REFERENCES dies(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_die_images_image
+    FOREIGN KEY (image_id) REFERENCES images(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_die_images_stage
+    FOREIGN KEY (stage_id) REFERENCES die_stages(id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- 7) xref_systems — reference systems
+CREATE TABLE xref_systems (
+  id    TINYINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  code  VARCHAR(10) NOT NULL,
+  name  VARCHAR(50) NOT NULL,
+
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_xref_systems_code (code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- 8) die_xrefs — cross-references
+CREATE TABLE die_xrefs (
+  id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  die_id     BIGINT UNSIGNED NOT NULL,
+  system_id  TINYINT UNSIGNED NOT NULL,
+  xref_code  VARCHAR(50) NOT NULL,
+  note       VARCHAR(255) NULL,
+  created_at DATETIME NULL,
+  updated_at DATETIME NULL,
+
+  PRIMARY KEY (id),
+
+  -- prevents duplicates like same WEX code twice on same die
+  UNIQUE KEY uq_die_xref (die_id, system_id, xref_code),
+
+  KEY idx_die_xrefs_die (die_id),
+  KEY idx_die_xrefs_system (system_id, xref_code),
+
+  CONSTRAINT fk_die_xrefs_die
+    FOREIGN KEY (die_id) REFERENCES dies(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_die_xrefs_system
+    FOREIGN KEY (system_id) REFERENCES xref_systems(id)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

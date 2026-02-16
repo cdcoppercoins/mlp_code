@@ -1,0 +1,238 @@
+CopperCoins 3.0 – Core Database Schema (Authoritative)
+
+This schema supports:
+
+sequential die numbers
+
+tombstones + reassignment
+
+stages
+
+images
+
+cross-references
+
+change logging
+
+-------------------------------------------------------------------------------------------
+
+1️⃣ dies — canonical die records
+
+(One row = one actual die variety)
+
+dies
+-----
+id                  BIGINT PK
+year                SMALLINT        (e.g. 1960)
+mint                CHAR(1)         (P, D, S)
+denom               SMALLINT        (1 = cent)
+die_type            CHAR(2)         (DO, DR, MM, OM, RD, OD)
+proof               BOOLEAN
+class               VARCHAR(50)
+star_rating         TINYINT
+notes               MEDIUMTEXT
+created_at
+updated_at
+
+Index:
+
+(year, mint, denom, die_type, proof)
+
+die_numbers — public die numbers (assignable slots)
+
+(Handles tombstones + lowest-available rule)
+
+-------------------------------------------------------------------------------------------
+
+2️⃣ die_numbers — public die numbers (assignable slots)
+
+(Handles tombstones + lowest-available rule)
+
+die_numbers
+-----------
+id                  BIGINT PK
+die_number          VARCHAR(20) UNIQUE   (e.g. 1960D-1MM-042)
+
+year                SMALLINT
+mint                CHAR(1)
+denom               SMALLINT
+die_type            CHAR(2)
+proof               BOOLEAN
+index_num           SMALLINT            (42)
+
+die_id              BIGINT NULL FK → dies.id
+
+status              ENUM(
+                       'assigned',
+                       'reserved_unassigned',
+                       'available_unassigned'
+                   )
+
+reserved_until      DATETIME NULL
+created_at
+updated_at
+
+
+Constraints:
+
+UNIQUE(year, mint, denom, die_type, proof, index_num)
+
+
+Index (lowest-available lookup):
+
+(year, mint, denom, die_type, proof, status, index_num)
+
+-------------------------------------------------------------------------------------------
+
+3️⃣ catalog_change_events — immutable change log
+
+(Public + printable)
+
+catalog_change_events
+---------------------
+id                  BIGINT PK
+event_type          ENUM(
+                       'merge_number_into_canonical',
+                       'release_reserved_number',
+                       'assign_number_to_die',
+                       'reassign_number_to_new_die'
+                   )
+
+die_number_id       BIGINT FK → die_numbers.id
+from_die_id         BIGINT NULL FK → dies.id
+to_die_id           BIGINT NULL FK → dies.id
+admin_user_id       BIGINT NULL     (loose for now)
+
+reason              TEXT
+effective_at        DATETIME
+created_at
+updated_at
+
+
+Indexes:
+
+(effective_at, event_type)
+(die_number_id, effective_at)
+
+-------------------------------------------------------------------------------------------
+
+4️⃣ die_stages — die stages (A, B, C…)
+
+(Lettering may change; ordering preserved)
+
+die_stages
+----------
+id                  BIGINT PK
+die_id              BIGINT FK → dies.id
+stage_letter        CHAR(1)        (A–Z)
+stage_sort          SMALLINT
+die_state           ENUM(
+                       'VEDS','EDS','EMDS',
+                       'MDS','LMDS','LDS','VLDS'
+                   ) NULL
+notes               MEDIUMTEXT
+created_at
+updated_at
+
+
+Constraint:
+
+UNIQUE(die_id, stage_letter)
+
+-------------------------------------------------------------------------------------------
+
+5️⃣ images — image storage metadata
+
+(No files stored in DB)
+
+images
+------
+id                  BIGINT PK
+storage_driver      ENUM('local','s3','r2','b2')
+path                VARCHAR(512)
+sha1                CHAR(40) NULL
+width               SMALLINT NULL
+height              SMALLINT NULL
+filesize            INT NULL
+mime                VARCHAR(50) NULL
+created_at
+
+-------------------------------------------------------------------------------------------
+
+6️⃣ die_images — image ↔ die links
+die_images
+----------
+id                  BIGINT PK
+die_id              BIGINT FK → dies.id
+image_id            BIGINT FK → images.id
+stage_id            BIGINT NULL FK → die_stages.id
+kind                ENUM(
+                       'thumbnail','obv','rev',
+                       'marker','reference','other'
+                   )
+caption             VARCHAR(255) NULL
+sort                SMALLINT
+created_at
+updated_at
+
+-------------------------------------------------------------------------------------------
+
+7️⃣ xref_systems — reference systems
+xref_systems
+------------
+id                  TINYINT PK
+code                VARCHAR(10) UNIQUE   (WEX, CONECA, FS)
+name                VARCHAR(50)
+
+8️⃣ die_xrefs — cross-references
+die_xrefs
+---------
+id                  BIGINT PK
+die_id              BIGINT FK → dies.id
+system_id           TINYINT FK → xref_systems.id
+xref_code            VARCHAR(50)
+note                VARCHAR(255) NULL
+created_at
+updated_at
+
+🔒 Core rules encoded by this schema
+
+Die numbers are sequential and gap-free
+
+Mistakes create tombstones (6-month hold)
+
+Lowest available index number is always reused
+
+All changes are logged and public
+
+Images auto-link via filename prefix
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

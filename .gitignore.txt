@@ -1,0 +1,17 @@
+# Don't upload secrets
+.env
+.env.*
+config.php
+config.local.php
+db.php
+
+# Don't upload big images (common folders - adjust later)
+images/
+img/
+uploads/
+c*/
+
+# junk
+*.log
+.DS_Store
+Thumbs.db

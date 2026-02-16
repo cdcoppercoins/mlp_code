@@ -1,0 +1,365 @@
+/* -----------------------------
+   Global / Page background
+----------------------------- */
+
+body {
+    background: url('background_img.jpg') repeat;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.page-shell {
+    width: 75%;          /* single source of truth for site width */
+    margin: 0 auto;      /* perfectly centered */
+    background: #ffffff; /* white behind header/nav/content */
+    box-sizing: border-box;
+}
+
+/* Main white content area */
+.content-wrapper {
+    width: 75%;              /* matches header/nav/set width */
+    margin: 0 auto;          /* center horizontally */
+    background: #ffffff;
+    padding: 10px 15px 0 15px; /* small top padding + 15px sides */
+    box-sizing: border-box;
+}
+/* Inner width helpers (used in header/footer/etc.) */
+.inner-width,
+.set-width {
+    width: 75%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Remove stray backgrounds inside white area if needed */
+.set-list,
+.image-container {
+    width: 100%;
+}
+
+/* -----------------------------
+   Header & Banners
+----------------------------- */
+
+/* Orange bar behind header area */
+.site-header {
+    color: #fff;
+    margin: 0;
+}
+
+/* Wood banner frame */
+.header-frame {
+    width: 75%;
+    margin: 10px auto 0;
+    background: url('banner_wood.jpg') center/cover no-repeat;
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.12);
+    position: relative;
+    z-index: 1;
+}
+
+/* Inner wrapper (no background) */
+.header-inner {
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Single responsive banner image */
+.site-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 15px 15px 0 15px;       /* 15px top/left/right gap */
+    box-shadow: 0 0 0 15px #ffffff; /* white “border” inside wood */
+}
+
+/* -----------------------------
+   Main navigation
+----------------------------- */
+
+/* White strip under header that matches content width */
+.nav-outer {
+    width: 75%;          /* same as header/content */
+    margin: 8px auto 0;  /* 8px below banner */
+    background: #ffffff;
+    box-sizing: border-box;
+}
+
+/* Nav itself: 60% width, centered inside white strip */
+.main-nav {
+    width: 60%;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+/* Gold nav bar */
+.main-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: #9c7420;        /* gold/brown bar */
+    border: 3px solid #ffffff;  /* white outline */
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+}
+
+.main-nav a {
+    display: block;
+    padding: 12px 18px;
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.35);
+}
+
+.main-nav a:hover {
+    background: #b9852a;
+}
+
+/* -----------------------------
+   Optional legacy logo/title
+   (kept in case used elsewhere)
+----------------------------- */
+
+.site-logo {
+    max-height: 160px;
+    height: auto;
+    width: auto;
+    flex-shrink: 0;
+}
+
+.site-title-group {
+    text-align: left;
+}
+
+.site-title-group h1 {
+    margin: 0 0 5px;
+    font-size: 22px;
+}
+
+.site-title-group p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* -----------------------------
+   Set list & set buttons
+----------------------------- */
+
+.set-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    padding: 25px 5px;
+    margin: 20px auto;
+    background: #446;
+}
+
+.set-box {
+    width: 300px;
+    padding: 20px;
+    background: #aac;
+    color: #ff0;
+    box-sizing: border-box;
+    border: 2px solid #009;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column; /* thumbnail above text */
+    align-items: center;
+    justify-content: flex-start;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: transform 0.15s ease,
+                box-shadow 0.15s ease,
+                background 0.15s ease;
+}
+
+.set-box:hover {
+    background: #d90;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+
+/* Thumbnail inside set button */
+.set-thumb {
+    width: 100%;
+    max-height: 120px;
+    min-height: 120px;
+    margin-bottom: 10px;
+    display: block;
+    object-fit: contain;
+}
+
+/* Change thumb background only when its box is hovered */
+.set-box:hover .set-thumb {
+    background: #d90;
+}
+
+/* Black placeholder for disabled/no-image sets */
+.set-thumb.placeholder {
+    height: 120px;
+    background: #000;
+}
+
+.set-label {
+    display: block;
+    text-align: center;
+}
+
+/* Disabled set buttons */
+.set-box.disabled {
+    opacity: 0.4;
+    background: #777;
+    color: #ccc;
+    border-color: #555;
+    pointer-events: none;
+    cursor: default;
+    box-shadow: none;
+}
+
+/* Home button */
+.home-box {
+    display: inline-flex;
+    width: 300px;
+    padding: 20px;
+    background: #aac;
+    color: #ff0;
+    box-sizing: border-box;
+    border: 2px solid #009;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    margin: 10px auto 20px;
+    transition: transform 0.15s ease,
+                box-shadow 0.15s ease,
+                background 0.15s ease;
+}
+
+.home-box:hover {
+    background: #d90;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+
+/* -----------------------------
+   Image grid & modal
+----------------------------- */
+
+.image-container {
+    margin: 10px auto;
+    background: #446;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.image-container img {
+    max-width: 210px;
+    width: 100%;
+    height: auto;
+    display: inline-block;
+    margin: 10px;
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+/* Modal overlay */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(200,200,200,0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal img {
+    max-width: 95vw;
+    max-height: 95vh;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 32px;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* -----------------------------
+   Footer
+----------------------------- */
+
+.site-footer {
+    background: #d90;
+    color: #ffffff;
+    padding: 15px 0;
+    margin-top: 40px;
+}
+
+.footer-inner {
+    font-size: 14px;
+}
+
+/* -----------------------------
+   Responsive tweaks
+----------------------------- */
+
+/* Header/nav tightening on tablets/phones */
+@media (max-width: 640px) {
+    .header-frame,
+    .main-nav {
+        width: 95%;
+    }
+
+    .main-nav ul {
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .main-nav a {
+        padding: 10px 12px;
+        font-weight: 700;
+    }
+}
+
+/* Stack set boxes on small phones */
+@media (max-width: 400px) {
+    .set-list {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .set-box,
+    .home-box {
+        width: 90%;
+        max-width: 300px;
+    }
+
+    .image-container {
+        width: 95%;
+    }
+
+    .inner-width,
+    .set-width {
+        width: 95%;
+    }
+}
